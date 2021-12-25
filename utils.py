@@ -29,13 +29,11 @@ class BCEWithLogitsLoss(torchmetrics.Metric):
         # state from multiple processes
         super().__init__(dist_sync_on_step=dist_sync_on_step)
         self.criterion = torch.nn.BCEWithLogitsLoss()
-        self.add_state("sum_bce_with_logits_loss", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("sum_bce_with_logits_loss", default=torch.tensor(0.), dist_reduce_fx="sum")
         self.add_state("n_observations", default=torch.tensor(0), dist_reduce_fx="sum")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):
         # update metric states
-        preds, target = self._input_format(preds, target)
-        assert preds.shape == target.shape
 
         self.sum_bce_with_logits_loss += self.criterion(preds, target)
         self.n_observations += target.numel()

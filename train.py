@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
 from utils import EarlyStopping
 from tqdm import tqdm
 from pathlib import Path
@@ -98,9 +98,9 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
             del train_batch
 
         training_result = model.training_epoch_end(outputs)
-        writer.add_scalars('data/training_loss', training_result['log']['avg_loss'])
-        writer.add_scalars('data/training_acc', training_result['log']['train_Accuracy'])
-        writer.add_scalars('data/training_auc', training_result['log']['train_AUC'])
+        writer.add_scalar('data/training_loss', training_result['log']['avg_loss'])
+        writer.add_scalar('data/training_acc', training_result['log']['train_Accuracy'])
+        writer.add_scalar('data/training_auc', training_result['log']['train_AUC'])
 
         # validation phase
         outputs = []
@@ -110,9 +110,9 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
             del eval_batch
 
         val_result = model.validation_epoch_end(outputs)
-        writer.add_scalars('data/val_loss', training_result['log']['avg_loss'])
-        writer.add_scalars('data/val_acc', training_result['log']['val_Accuracy'])
-        writer.add_scalars('data/val_auc', training_result['log']['val_AUC'])
+        writer.add_scalar('data/val_loss', val_result['log']['avg_loss'])
+        writer.add_scalar('data/val_acc', val_result['log']['val_Accuracy'])
+        writer.add_scalar('data/val_auc', val_result['log']['val_AUC'])
         
         records[f'epoch {i}'] = val_result['log']
 

@@ -51,7 +51,8 @@ class Net(nn.Module):
         #batch['rgb_path']
         out = self.forward(x)
         loss = self.train_criterion(out, y)
-        score = self.train_metrics(out, y)
+        pred = (out > 0.5).long()
+        score = self.train_metrics(pred.flatten(), y.long().flatten())
         score = { k: v.item() for k, v in score.items() }
         score['loss'] = loss
         return score
@@ -64,29 +65,34 @@ class Net(nn.Module):
             #batch['rgb_path']
             out = self.forward(x)
             loss = self.valid_criterion(out, y)
-            score = self.valid_metrics(out, y)
+            pred = (out > 0.5).long()
+            score = self.valid_metrics(pred.flatten(), y.long().flatten())
             score = { k: v.item() for k, v in score.items() }
             score['val_loss'] = loss.item()
         return score
 
     def training_epoch_end(self, outputs):
-        avg_loss = self.train_criterion.compute()
+        avg_loss = self.train_criterion.compute().item()
         logs = self.train_metrics.compute()
+        logs = { k: v.item() for k, v in logs.items() }
         logs['avg_loss'] = avg_loss
         return { 'avg_loss' : avg_loss, 'log' : logs }
 
     def validation_epoch_end(self, outputs):
-        avg_loss = self.valid_criterion.compute()
+        avg_loss = self.valid_criterion.compute().item()
         logs = self.valid_metrics.compute()
+        logs = { k: v.item() for k, v in logs.items() }
         logs['avg_loss'] = avg_loss
         return { 'avg_loss' : avg_loss, 'log' : logs }
 
-    def state_dict(self, optimizer, scheduler):
+    def state_dict(self, optimizer, scheduler=None):
         dic =  {
             "net": deepcopy(self.net.state_dict()),
-            "optimizer": deepcopy(optimizer.state_dict()),
-            "scheduler": deepcopy(scheduler.state_dict()),
+            "optimizer": deepcopy(optimizer.state_dict())
         }
+        if not scheduler is None:
+            dic["scheduler"] = deepcopy(scheduler.state_dict())
+        
         if AMP:
             dic['amp'] = deepcopy(amp.state_dict())
         return dic

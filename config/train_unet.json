@@ -1,0 +1,23 @@
+{
+    "seed" : 57,
+    "epochs": 2750,
+    "checkpoint_period": 500,
+    "img_size": 256,
+    "classes": ["building"],
+    "dataset" : {
+        "root": "data",
+        "batch_size" : 8,
+        "train_images_dir": "train_img",
+        "val_images_dir": "val_img",
+        "train_masks_dir": "train_label",
+        "val_masks_dir": "val_label"
+    },
+    "model" : {
+        "in_channels": 3, 
+        "n_classes": 1, 
+        "n_downsample": 4
+    },
+    "optim" : {
+        "lr" : 1e-4
+    }
+}

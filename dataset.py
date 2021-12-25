@@ -36,7 +36,6 @@ class RS21BD(VisionDataset):
         self.images_dir = images_dir
         self.masks_dir = masks_dir
         self.rgb_list = self._get_rgb_list()
-        self.rgb_list = self.rgb_list[:2]
 
         # convert str names to class values on masks
         self.class_values = [self.CLASSES.index(cls.lower()) for cls in classes]

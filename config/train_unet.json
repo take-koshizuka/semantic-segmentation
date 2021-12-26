@@ -13,6 +13,7 @@
         "train_masks_dir": "train_label",
         "val_masks_dir": "val_label"
     },
+    "model_name": "unet",
     "model" : {
         "in_channels": 3, 
         "n_classes": 1, 

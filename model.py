@@ -74,6 +74,8 @@ class Net(nn.Module):
         with torch.no_grad():
             x = batch['image'].to(self.device).float()
             out = self.forward(x)
+            if isinstance(out, tuple):
+                out = out[0]
             rgb_fname = pathlib.Path(batch['rgb_path'][0]).stem
         return out, rgb_fname
 

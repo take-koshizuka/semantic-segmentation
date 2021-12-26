@@ -43,7 +43,7 @@ def main(checkpoint_dir, out_dir):
     te_dl = DataLoader(te_ds, batch_size=1, shuffle=False)
 
     # Define model
-    net = UNet(**cfg['model'])
+    net = MODEL_NAME[cfg['model_name'].lower()](**cfg['model'])
     model = Net(net, device)
     
     checkpoint_path = checkpoint_dir / "best-model.pt"

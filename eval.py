@@ -34,7 +34,7 @@ def main(checkpoint_dir, out_dir):
     with open(train_config_path, 'r') as f:
         cfg = json.load(f)
     fix_seed(cfg['seed'])
-    
+    out_dir.mkdir(exist_ok=True, parents=True)
     # Define dataset
     test_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['test_images_dir']
     te_ds = RS21BD(test_images_dir, augmentation=get_train_augmentation(cfg['img_size']), classes=cfg['classes'])

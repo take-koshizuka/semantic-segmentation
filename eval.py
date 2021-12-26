@@ -10,7 +10,10 @@ import argparse
 import cv2
 
 from dataset import RS21BD, get_train_augmentation
-from model import UNet, Net
+from model import Net, MODEL_NAME
+from unet import UNet
+from pspnet import PSPNet
+
 try:
     import apex.amp as amp
     AMP = True

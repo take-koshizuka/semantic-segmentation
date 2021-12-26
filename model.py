@@ -45,6 +45,8 @@ class Net(nn.Module):
         #batch['rgb_path']
         out = self.forward(x)
         loss = self.criterion(out, y)
+        if isinstance(out, tuple):
+            out = out[0]
         pred = (out > 0.0).long()
         score = self.train_metrics(pred.flatten(), y.long().flatten())
         score = { k: v.item() for k, v in score.items() }
@@ -59,6 +61,8 @@ class Net(nn.Module):
             #batch['rgb_path']
             out = self.forward(x)
             loss = self.criterion(out, y)
+            if isinstance(out, tuple):
+                out = out[0]
             pred = (out > 0.0).long()
             score = self.valid_metrics(pred.flatten(), y.long().flatten())
             score = { k: v.item() for k, v in score.items() }

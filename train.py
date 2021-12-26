@@ -11,7 +11,10 @@ from pathlib import Path
 import argparse
 
 from dataset import RS21BD, get_train_augmentation, get_val_augmentation
-from model import UNet, Net
+from model import Net, MODEL_NAME
+from unet import UNet
+from pspnet import PSPNet
+
 try:
     import apex.amp as amp
     AMP = True
@@ -52,7 +55,7 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
     va_dl = DataLoader(va_ds, batch_size=cfg['dataset']['batch_size'], drop_last=False)
 
     # Define model
-    net = UNet(**cfg['model'])
+    net = MODEL_NAME[cfg['model_name'].lower()](**cfg['model'])
     model = Net(net, device)
     model.to(device)
 

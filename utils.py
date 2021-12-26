@@ -1,7 +1,3 @@
-import torch
-import torchmetrics
-
-
 class EarlyStopping(object):
     def __init__(self, monitor='loss', direction='min'):
         self.monitor = monitor
@@ -20,24 +16,3 @@ class EarlyStopping(object):
 
     def update(self, values):
         self.monitor_values[self.monitor] = values[self.monitor]
-
-
-class BCEWithLogitsLoss(torchmetrics.Metric):
-    def __init__(self, dist_sync_on_step=False):
-        # call `self.add_state`for every internal state that is needed for the metrics computations
-        # dist_reduce_fx indicates the function that should be used to reduce
-        # state from multiple processes
-        super().__init__(dist_sync_on_step=dist_sync_on_step)
-        self.criterion = torch.nn.BCEWithLogitsLoss()
-        self.add_state("sum_bce_with_logits_loss", default=torch.tensor(0.), dist_reduce_fx="sum")
-        self.add_state("n_observations", default=torch.tensor(0), dist_reduce_fx="sum")
-
-    def update(self, preds: torch.Tensor, target: torch.Tensor):
-        # update metric states
-
-        self.sum_bce_with_logits_loss += self.criterion(preds, target)
-        self.n_observations += target.numel()
-
-    def compute(self):
-        # compute final result
-        return self.sum_bce_with_logits_loss.float() / self.n_observations

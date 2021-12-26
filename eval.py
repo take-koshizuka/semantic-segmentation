@@ -3,15 +3,13 @@ import json
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-import torch.optim as optim
-from tensorboardX import SummaryWriter
-from utils import EarlyStopping
+
 from tqdm import tqdm
 from pathlib import Path
 import argparse
 import cv2
 
-from dataset import RS21BD, get_train_augmentation, get_val_augmentation
+from dataset import RS21BD, get_train_augmentation
 from model import UNet, Net
 try:
     import apex.amp as amp
@@ -55,13 +53,13 @@ def main(checkpoint_dir, out_dir):
 
     model.eval()
     
-    for batch_idx, batch in enumerate(tqdm(te_dl, leave=False)):
-        pred, rgb_fname = model.generating_step(batch)
+    for batch_idx, batch in enumerate(tqdm(te_dl)):
+        pred, rgb_fname = model.generating_step(batch, batch_idx)
         pred = (pred > 0).long().squeeze().cpu().numpy().round()
         pred = (pred*255).astype('uint8')
         pred = cv2.resize(pred, (512, 512), interpolation=cv2.INTER_CUBIC)
         # save prediction with the original image size
-        cv2.imwrite(str(out_dir / (rgb_fname[0] + '.png')), pred)
+        cv2.imwrite(str(out_dir / (rgb_fname + '.png')), pred)
 
         del batch
 

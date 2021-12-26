@@ -9,7 +9,7 @@ from pathlib import Path
 import argparse
 import cv2
 
-from dataset import RS21BD, get_train_augmentation
+from dataset import RS21BD, get_test_augmentation
 from model import Net, MODEL_NAME
 from unet import UNet
 from pspnet import PSPNet
@@ -40,7 +40,7 @@ def main(checkpoint_dir, out_dir):
     out_dir.mkdir(exist_ok=True, parents=True)
     # Define dataset
     test_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['test_images_dir']
-    te_ds = RS21BD(test_images_dir, augmentation=get_train_augmentation(cfg['img_size']), classes=cfg['classes'])
+    te_ds = RS21BD(test_images_dir, augmentation=get_test_augmentation(cfg['img_size']), classes=cfg['classes'])
 
     # Define dataloader
     te_dl = DataLoader(te_ds, batch_size=1, shuffle=False)

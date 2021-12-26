@@ -46,7 +46,9 @@ class RS21BD(VisionDataset):
         image = cv2.imread(str(rgb_path), cv2.IMREAD_COLOR)
 
         if self.masks_dir is None:
-            image = to_tensor(image)
+            if self.augmentation:
+                sample = self.augmentation(image=image)
+                image = sample['image']
             return dict(image=image, rgb_path=str(rgb_path))
         
         cls_path = os.path.join(self.masks_dir, rgb_fname + '.png')
@@ -88,5 +90,12 @@ def get_val_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
         albu.Lambda(image=to_tensor,mask=to_tensor),
+    ]
+    return albu.Compose(test_transform)
+
+def get_test_augmentation(img_size):
+    test_transform = [
+        albu.Resize(img_size,img_size),
+        albu.Lambda(image=to_tensor),
     ]
     return albu.Compose(test_transform)

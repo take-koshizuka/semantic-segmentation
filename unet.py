@@ -44,7 +44,7 @@ class UNet(nn.Module):
 
         self._return_intermed = False
 
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.BCEWithLogitsLoss()
 
     @staticmethod
     def _make_unet_conv_block(in_channels, out_channels):

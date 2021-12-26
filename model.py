@@ -41,7 +41,7 @@ class Net(nn.Module):
     def training_step(self, batch, batch_idx):
         self.train()
         x = batch['image'].to(self.device).float()
-        y = batch['mask'].to(self.device).float()
+        y = batch['mask'].to(self.device).long()
         #batch['rgb_path']
         out = self.forward(x)
         loss = self.criterion(out, y)
@@ -58,7 +58,7 @@ class Net(nn.Module):
             y = batch['mask'].to(self.device).float()
             #batch['rgb_path']
             out = self.forward(x)
-            loss = self.criterion(out, y)
+            loss = self.criterion(out, y.long())
             pred = (out > 0.0).long()
             score = self.valid_metrics(pred.flatten(), y.long().flatten())
             score = { k: v.item() for k, v in score.items() }

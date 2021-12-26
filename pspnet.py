@@ -281,6 +281,6 @@ class PSPLoss(nn.Module):
         self.aux_weight = aux_weight
     
     def forward(self, outputs, targets):
-        loss = F.cross_entropy(outputs[0], targets, reduction='mean')
-        loss_aux = F.cross_entropy(outputs[1], targets, reduction='mean')
+        loss = F.cross_entropy(outputs[0], targets.long(), reduction='mean')
+        loss_aux = F.cross_entropy(outputs[1], targets.long(), reduction='mean')
         return loss + self.aux_weight * loss_aux

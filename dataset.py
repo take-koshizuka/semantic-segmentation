@@ -29,7 +29,7 @@ class RS21BD(VisionDataset):
     def __init__(
         self,
         images_dir,
-        masks_dir,
+        masks_dir=None,
         classes=None,
         augmentation=None,
     ):
@@ -50,11 +50,14 @@ class RS21BD(VisionDataset):
     def __getitem__(self, index):
         rgb_path = self.rgb_list[index]
         rgb_fname = rgb_path.stem
-        cls_path = os.path.join(self.masks_dir, rgb_fname + '.png')
-
         #image = imread(str(rgb_path))
         image = cv2.imread(str(rgb_path), cv2.IMREAD_COLOR)
 
+        if self.masks_dir is None:
+            image = to_tensor(image)
+            return dict(image=image, rgb_path=str(rgb_path))
+        
+        cls_path = os.path.join(self.masks_dir, rgb_fname + '.png')
         #mask = imread(str(cls_path))
         mask = cv2.imread(str(cls_path), cv2.IMREAD_UNCHANGED)
         mask[mask < 255] = 0  # non-buildings

@@ -39,9 +39,7 @@ def main(checkpoint_dir, out_dir):
     
     # Define dataset
     test_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['test_images_dir']
-    test_masks_dir = Path(cfg['dataset']['root']) / cfg['dataset']['test_masks_dir']
-    te_ds = RS21BD(test_images_dir, test_masks_dir, 
-                augmentation=get_train_augmentation(cfg['img_size']), classes=cfg['classes'])
+    te_ds = RS21BD(test_images_dir, augmentation=get_train_augmentation(cfg['img_size']), classes=cfg['classes'])
 
     # Define dataloader
     te_dl = DataLoader(te_ds, batch_size=1, shuffle=False)
@@ -76,5 +74,5 @@ if __name__ == '__main__':
     ## example
     # args.dir = "checkpoints/tmp"
     ##
-    
+
     main(Path(args.dir), Path(args.out_dir))

@@ -35,8 +35,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.net = net
         self.device = device
-        self.train_criterion = BCEWithLogitsLoss()
-        self.valid_criterion = BCEWithLogitsLoss()
+        self.criterion = torch.nn.BCEWithLogitsLoss()
         metrics = MetricCollection([Accuracy()])
         self.train_metrics = metrics.clone(prefix='train_')
         self.valid_metrics = metrics.clone(prefix='val_')
@@ -50,7 +49,7 @@ class Net(nn.Module):
         y = batch['mask'].to(self.device).float()
         #batch['rgb_path']
         out = self.forward(x)
-        loss = self.train_criterion(out, y)
+        loss = self.criterion(out, y)
         pred = (out > 0.0).long()
         score = self.train_metrics(pred.flatten(), y.long().flatten())
         score = { k: v.item() for k, v in score.items() }
@@ -64,7 +63,7 @@ class Net(nn.Module):
             y = batch['mask'].to(self.device).float()
             #batch['rgb_path']
             out = self.forward(x)
-            loss = self.valid_criterion(out, y)
+            loss = self.criterion(out, y)
             pred = (out > 0.0).long()
             score = self.valid_metrics(pred.flatten(), y.long().flatten())
             score = { k: v.item() for k, v in score.items() }
@@ -80,20 +79,18 @@ class Net(nn.Module):
         return out, rgb_fname
 
     def training_epoch_end(self, outputs):
-        avg_loss = self.train_criterion.compute().item()
+        avg_loss = torch.mean(torch.cat([ out['loss'] for out in outputs ]).flatten())
         logs = self.train_metrics.compute()
         logs = { k: v.item() for k, v in logs.items() }
         logs['avg_loss'] = avg_loss
         return { 'avg_loss' : avg_loss, 'log' : logs }
 
     def validation_epoch_end(self, outputs):
-        avg_loss = self.valid_criterion.compute().item()
+        avg_loss = torch.mean(torch.cat([ out['val_loss'] for out in outputs ]).flatten())
         logs = self.valid_metrics.compute()
         logs = { k: v.item() for k, v in logs.items() }
         logs['avg_loss'] = avg_loss
         return { 'avg_loss' : avg_loss, 'log' : logs }
-
-    
 
     def state_dict(self, optimizer, scheduler=None):
         dic =  {

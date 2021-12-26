@@ -15,7 +15,8 @@
     },
     "model" : {
         "in_channels": 3, 
-        "n_classes": 1
+        "n_classes": 1,
+        "aux_weight": 0.4
     },
     "optim" : {
         "lr" : 1e-4

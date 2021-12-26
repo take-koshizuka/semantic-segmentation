@@ -30,7 +30,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.net = net
         self.device = device
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion = self.net.criterion
         metrics = MetricCollection([Accuracy()])
         self.train_metrics = metrics.clone(prefix='train_')
         self.valid_metrics = metrics.clone(prefix='val_')

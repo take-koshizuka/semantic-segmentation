@@ -44,6 +44,8 @@ class UNet(nn.Module):
 
         self._return_intermed = False
 
+        self.criterion = nn.CrossEntropyLoss()
+
     @staticmethod
     def _make_unet_conv_block(in_channels, out_channels):
         return nn.Sequential(

@@ -83,7 +83,7 @@ def get_train_augmentation(img_size):
         albu.Transpose(p=0.5),
         albu.Resize(img_size,img_size),
         albu.Lambda(image=to_tensor,mask=to_tensor),
-        albu.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        albu.Normalize()
     ]
     return albu.Compose(train_transform)
 
@@ -91,7 +91,7 @@ def get_val_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
         albu.Lambda(image=to_tensor,mask=to_tensor),
-        albu.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        albu.Normalize()
     ]
     return albu.Compose(test_transform)
 
@@ -99,6 +99,6 @@ def get_test_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
         albu.Lambda(image=to_tensor),
-        albu.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        albu.Normalize()
     ]
     return albu.Compose(test_transform)

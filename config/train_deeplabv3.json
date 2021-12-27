@@ -2,7 +2,6 @@
     "seed" : 57,
     "epochs": 100,
     "checkpoint_period": 10,
-    "img_size": 475,
     "classes": ["building"],
     "dataset" : {
         "root": "data",

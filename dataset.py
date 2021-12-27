@@ -75,29 +75,26 @@ def to_tensor(x, **kwargs):
 def to_tensor_labels(x, **kwargs):
     return x.transpose(2, 0, 1).astype('int64')
 
-def get_train_augmentation(img_size):
+def get_train_augmentation():
     train_transform = [
         albu.HorizontalFlip(p=0.5),
         albu.VerticalFlip(p=0.5),
         albu.RandomRotate90(p=0.5),
         albu.Transpose(p=0.5),
-        albu.Resize(img_size,img_size),
         albu.Normalize(),
         ToTensorV2(transpose_mask=True)
     ]
     return albu.Compose(train_transform)
 
-def get_val_augmentation(img_size):
+def get_val_augmentation():
     test_transform = [
-        albu.Resize(img_size,img_size),
         albu.Normalize(),
         ToTensorV2(transpose_mask=True)
     ]
     return albu.Compose(test_transform)
 
-def get_test_augmentation(img_size):
+def get_test_augmentation():
     test_transform = [
-        albu.Resize(img_size,img_size),
         albu.Normalize(),
         ToTensorV2()
     ]

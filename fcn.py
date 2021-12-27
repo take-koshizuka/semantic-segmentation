@@ -4,37 +4,23 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn.functional import interpolate
+from base import Auxiliarylayers
 
-class FCN(BaseNet):
-    r"""Fully Convolutional Networks for Semantic Segmentation
-    Parameters
-    ----------
-    nclass : int
-        Number of categories for the training dataset.
-    backbone : string
-        Pre-trained dilated backbone network type (default:'resnet50s'; 'resnet50s',
-        'resnet101s' or 'resnet152s').
-    norm_layer : object
-        Normalization layer used in backbone network (default: :class:`mxnet.gluon.nn.BatchNorm`;
-    Reference:
-        Long, Jonathan, Evan Shelhamer, and Trevor Darrell. "Fully convolutional networks
-        for semantic segmentation." *CVPR*, 2015
-    Examples
-    --------
-    >>> model = FCN(nclass=21, backbone='resnet50s')
-    >>> print(model)
-    """
-    def __init__(self, nclass, backbone, aux=True, se_loss=False, with_global=False,
-                 norm_layer=SyncBatchNorm, *args, **kwargs):
-        super(FCN, self).__init__(nclass, backbone, aux, se_loss, norm_layer=norm_layer,
-                                  *args, **kwargs)
+class FCN(nn.Module):
+    def __init__(self, n_classes, aux_weight, pretrained=True):
+        super(FCN, self).__init__()
+        self.n_classes = n_classes
+        self.aux_weight = aux_weight
+
         self.head = FCNHead(2048, nclass, norm_layer, self._up_kwargs, with_global)
         if aux:
             self.auxlayer = FCNHead(1024, nclass, norm_layer)
+        self.aux = Auxiliarylayers(
+            in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
 
     def forward(self, x):
         imsize = x.size()[2:]
-        _, _, c3, c4 = self.base_forward(x)
+        _, _, c3, c4 = self.backbone(x)
 
         x = self.head(c4)
         x = interpolate(x, imsize, **self._up_kwargs)

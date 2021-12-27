@@ -43,12 +43,12 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
     train_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['train_images_dir']
     train_masks_dir = Path(cfg['dataset']['root']) / cfg['dataset']['train_masks_dir']
     tr_ds = RS21BD(train_images_dir, train_masks_dir, 
-                augmentation=get_train_augmentation(cfg['img_size']), classes=cfg['classes'])
+                augmentation=get_train_augmentation(), classes=cfg['classes'])
 
     val_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['val_images_dir']
     val_masks_dir = Path(cfg['dataset']['root']) / cfg['dataset']['val_masks_dir']
     va_ds = RS21BD(val_images_dir, val_masks_dir, 
-                augmentation=get_val_augmentation(cfg['img_size']), classes=cfg['classes'])
+                augmentation=get_val_augmentation(), classes=cfg['classes'])
         
     # Define dataloader
     tr_dl = DataLoader(tr_ds, batch_size=cfg['dataset']['batch_size'], shuffle=True, drop_last=True)

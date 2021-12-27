@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utils import AuxLoss
 from resnet import get_resnet50, get_resnet101, Backbone
+from model import conv2DBatchNormRelu, Auxiliarylayers
 
 class PSPNet(nn.Module):
     def __init__(self, n_classes, aux_weight):
@@ -53,20 +54,7 @@ class PSPNet(nn.Module):
         return (output, output_aux)
 
 
-class conv2DBatchNormRelu(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride, padding, dilation, bias):
-        super(conv2DBatchNormRelu, self).__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels,
-                              kernel_size, stride, padding, dilation, bias=bias)
-        self.batchnorm = nn.BatchNorm2d(out_channels)
-        self.relu = nn.ReLU(inplace=True)
-        # inplase設定で入力を保存せずに出力を計算し、メモリ削減する
 
-    def forward(self, x):
-        x = self.conv(x)
-        x = self.batchnorm(x)
-        outputs = self.relu(x)
-        return outputs
 
 class FeatureMap_convolution(nn.Module):
     def __init__(self):
@@ -245,28 +233,6 @@ class DecodePSPFeature(nn.Module):
         return output
 
 
-class AuxiliaryPSPlayers(nn.Module):
-    def __init__(self, in_channels, height, width, n_classes):
-        super(AuxiliaryPSPlayers, self).__init__()
-
-        # forwardで使用する画像サイズ
-        self.height = height
-        self.width = width
-
-        self.cbr = conv2DBatchNormRelu(
-            in_channels=in_channels, out_channels=256, kernel_size=3, stride=1, padding=1, dilation=1, bias=False)
-        self.dropout = nn.Dropout2d(p=0.1)
-        self.classification = nn.Conv2d(
-            in_channels=256, out_channels=n_classes, kernel_size=1, stride=1, padding=0)
-
-    def forward(self, x):
-        x = self.cbr(x)
-        x = self.dropout(x)
-        x = self.classification(x)
-        output = F.interpolate(
-            x, size=(self.height, self.width), mode="bilinear", align_corners=True)
-
-        return output
 
 class PSPNet_resnet50(nn.Module):
     def __init__(self, n_classes, aux_weight, pretrained=True):
@@ -280,13 +246,12 @@ class PSPNet_resnet50(nn.Module):
         resnet = get_resnet50(pretrained=pretrained)
         self.backbone = Backbone(resnet)
 
-        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[
-            6, 3, 2, 1], height=img_size_8, width=img_size_8)
+        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[6, 3, 2, 1])
         
         self.decode_feature = DecodePSPFeature(
             height=img_size, width=img_size, n_classes=n_classes)
 
-        self.aux = AuxiliaryPSPlayers(
+        self.aux = Auxiliarylayers(
             in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
 
         self.criterion = AuxLoss(aux_weight)
@@ -309,13 +274,12 @@ class PSPNet_resnet101(nn.Module):
         resnet = get_resnet101(pretrained=pretrained)
         self.backbone = Backbone(resnet)
 
-        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[
-            6, 3, 2, 1])
+        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[6, 3, 2, 1])
         
         self.decode_feature = DecodePSPFeature(
             height=img_size, width=img_size, n_classes=n_classes)
 
-        self.aux = AuxiliaryPSPlayers(
+        self.aux = Auxiliarylayers(
             in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
 
         self.criterion = AuxLoss(aux_weight)

@@ -10,7 +10,7 @@ from torchvision.datasets.vision import VisionDataset
 import pathlib
 import cv2
 import albumentations as albu
-
+from albumentations.pytorch.transforms import ToTensorV2
 
 class RS21BD(VisionDataset):
     CLASSES = [
@@ -66,7 +66,7 @@ class RS21BD(VisionDataset):
         if self.augmentation:
             sample = self.augmentation(image=image, mask=mask)
             image, mask = sample['image'], sample['mask']
-
+        
         return dict(image=image, mask=mask, rgb_path=str(rgb_path))
 
 def to_tensor(x, **kwargs):
@@ -83,7 +83,7 @@ def get_train_augmentation(img_size):
         albu.Transpose(p=0.5),
         albu.Resize(img_size,img_size),
         albu.Normalize(),
-        albu.ToTensorV2()
+        ToTensorV2(transpose_mask=True)
     ]
     return albu.Compose(train_transform)
 
@@ -91,7 +91,7 @@ def get_val_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
         albu.Normalize(),
-        albu.ToTensorV2()
+        ToTensorV2(transpose_mask=True)
     ]
     return albu.Compose(test_transform)
 
@@ -99,6 +99,6 @@ def get_test_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
         albu.Normalize(),
-        albu.ToTensorV2()
+        ToTensorV2()
     ]
     return albu.Compose(test_transform)

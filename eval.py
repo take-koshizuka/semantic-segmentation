@@ -11,15 +11,11 @@ import cv2
 
 from dataset import RS21BD, get_test_augmentation
 from model import Net, MODEL_NAME
-from unet import UNet
-from pspnet import PSPNet
-
 try:
     import apex.amp as amp
     AMP = True
 except ImportError:
     AMP = False
-
 
 def fix_seed(seed):
     # random

@@ -6,51 +6,21 @@ from utils import AuxLoss
 from resnet import get_resnet50, get_resnet101
 from base import  Backbone, conv2DBatchNormRelu, Auxiliarylayers
 
-class PSPNet_resnet50(nn.Module):
-    def __init__(self, n_classes, aux_weight, pretrained=True):
-        super(PSPNet_resnet50, self).__init__()
+class PSPNet(nn.Module):
+    def __init__(self, n_classes, aux_weight, backbone='resnet50', pretrained=True):
+        super(PSPNet, self).__init__()
         self.n_classes = n_classes
         self.aux_weight = aux_weight
-
-        resnet = get_resnet50(pretrained=pretrained)
-        self.backbone = Backbone(resnet)
-
-        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[6, 3, 2, 1])
         
-        self.decode_feature = DecodePSPFeature(n_classes=n_classes)
+        if backbone == 'resnet50':
+            resnet = get_resnet50(pretrained=pretrained)
+        elif backbone == 'resnet101':
+            resnet = get_resnet101(pretrained=pretrained)
 
-        self.aux = Auxiliarylayers(in_channels=1024, n_classes=n_classes)
-
-        self.criterion = AuxLoss(aux_weight)
-    
-    def forward(self, x):
-        _, _, h, w = x.size()
-        _, _, c3, c4 = self.backbone(x)
-        x = self.pyramid_pooling(c4)
-        output = self.decode_feature(x)
-        output = F.interpolate(output, size=(h, w), mode="bilinear", align_corners=True)
-
-        auxout = self.aux(c3)
-        auxout = F.interpolate(auxout, size=(h, w), mode="bilinear", align_corners=True) 
-        return (output, auxout)
-
-class PSPNet_resnet101(nn.Module):
-    def __init__(self, n_classes, aux_weight, pretrained=True):
-        super(PSPNet_resnet101, self).__init__()
-        self.n_classes = n_classes
-        self.aux_weight = aux_weight
-
-        # パラメータ設定
-        img_size = 475
-        resnet = get_resnet101(pretrained=pretrained)
         self.backbone = Backbone(resnet)
-
         self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[6, 3, 2, 1])
-        
         self.decode_feature = DecodePSPFeature(n_classes=n_classes)
-
         self.aux = Auxiliarylayers(in_channels=1024, n_classes=n_classes)
-
         self.criterion = AuxLoss(aux_weight)
     
     def forward(self, x):

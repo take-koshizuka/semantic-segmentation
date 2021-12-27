@@ -2,6 +2,7 @@
 # Import Libs
 # ======================
 
+from fcn import FCN
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,7 +10,6 @@ import pathlib
 from copy import deepcopy
 
 from torchmetrics import MetricCollection, Accuracy, IoU
-from resnet import get_resnet50, get_resnet101
 
 try:
     import apex.amp as amp
@@ -18,16 +18,17 @@ except ImportError:
     AMP = False
 
 from unet import UNet
-from pspnet import PSPNet_resnet50, PSPNet_resnet101
-#Dan_resnet50, Dan_resnet101
-from deeplabv3 import Deeplabv3_resnet50, Deeplabv3_resnet101
+from fcn import FCN
+from pspnet import PSPNet
+from deeplabv3 import Deeplabv3
+from danet import DANet
 
 MODEL_NAME = {
     "unet" : UNet,
-    "pspnet_resnet50" : PSPNet_resnet50,
-    "pspnet_resnet101" : PSPNet_resnet101,
-    "deeplabv3_resnet50" : Deeplabv3_resnet50,
-    "deeplabv3_resnet101" : Deeplabv3_resnet101
+    "fcn" : FCN,
+    "pspnet" : PSPNet,
+    "deeplabv3": Deeplabv3,
+    "danet": DANet
 }
     #"dan_resnet50" : Dan_resnet50,
     #"dan_resnet101" : Dan_resnet101

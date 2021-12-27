@@ -7,16 +7,13 @@ from torch.nn.functional import interpolate
 from base import Auxiliarylayers
 
 class FCN(nn.Module):
-    def __init__(self, n_classes, aux_weight, pretrained=True):
+    def __init__(self, n_classes, aux_weight, with_global=False, pretrained=True):
         super(FCN, self).__init__()
         self.n_classes = n_classes
         self.aux_weight = aux_weight
 
         self.head = FCNHead(2048, nclass, norm_layer, self._up_kwargs, with_global)
-        if aux:
-            self.auxlayer = FCNHead(1024, nclass, norm_layer)
-        self.aux = Auxiliarylayers(
-            in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
+        self.aux = Auxiliarylayers(in_channels=1024, n_classes=n_classes)
 
     def forward(self, x):
         imsize = x.size()[2:]
@@ -55,24 +52,11 @@ class GlobalPooling(nn.Module):
 
         
 class FCNHead(nn.Module):
-    def __init__(self, in_channels, out_channels, norm_layer, up_kwargs={}, with_global=False):
+    def __init__(self, in_channels, out_channels):
         super(FCNHead, self).__init__()
         inter_channels = in_channels // 4
-        self._up_kwargs = up_kwargs
-        if with_global:
-            self.conv5 = nn.Sequential(nn.Conv2d(in_channels, inter_channels, 3, padding=1, bias=False),
-                                       norm_layer(inter_channels),
-                                       nn.ReLU(),
-                                       ConcurrentModule([
-                                            Identity(),
-                                            GlobalPooling(inter_channels, inter_channels,
-                                                          norm_layer, self._up_kwargs),
-                                       ]),
-                                       nn.Dropout(0.1, False),
-                                       nn.Conv2d(2*inter_channels, out_channels, 1))
-        else:
-            self.conv5 = nn.Sequential(nn.Conv2d(in_channels, inter_channels, 3, padding=1, bias=False),
-                                       norm_layer(inter_channels),
+        self.conv5 = nn.Sequential(nn.Conv2d(in_channels, inter_channels, 3, padding=1, bias=False),
+                                       nn.BatchNorm2d(inter_channels),
                                        nn.ReLU(),
                                        nn.Dropout(0.1, False),
                                        nn.Conv2d(inter_channels, out_channels, 1))

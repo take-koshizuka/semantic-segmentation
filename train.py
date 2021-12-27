@@ -12,8 +12,6 @@ import argparse
 
 from dataset import RS21BD, get_train_augmentation, get_val_augmentation
 from model import Net, MODEL_NAME
-from unet import UNet
-from pspnet import PSPNet
 
 try:
     import apex.amp as amp

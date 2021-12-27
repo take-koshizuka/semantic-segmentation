@@ -18,10 +18,13 @@ except ImportError:
 
 from unet import UNet
 from pspnet import PSPNet
+from deeplabv3 import Deeplabv3_resnet50, Deeplabv3_resnet101
 
 MODEL_NAME = {
     "unet" : UNet,
     "pspnet" : PSPNet,
+    "deeplabv3_resnet50" : Deeplabv3_resnet50,
+    "deeplabv3_resnet101" : Deeplabv3_resnet101
 }
 
 

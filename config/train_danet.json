@@ -15,8 +15,6 @@
     "model_name": "danet",
     "model" : {
         "n_classes": 1,
-        "aux_weight": 0.4,
-        "se_weight": 0.2,
         "backbone": "resnet50"
     },
     "optim" : {

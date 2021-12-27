@@ -10,7 +10,7 @@ from utils import AuxSeLoss
 
 
 class DANet(nn.Module):
-    def __init__(self, n_classes, aux_weight, se_weight, backbone='resnet50', pretrained=True):
+    def __init__(self, n_classes,  backbone='resnet50', pretrained=True):
         super(DANet, self).__init__()
 
         if backbone == 'resnet50':
@@ -20,7 +20,7 @@ class DANet(nn.Module):
         
         self.backbone = Backbone(resnet)
         self.head = DANetHead(2048, n_classes)
-        self.criterion = AuxSeLoss(n_classes, aux_weight, se_weight)
+        self.criterion = nn.BCEWithLogitsLoss()
 
     def forward(self, x):
         _, _, h, w = x.size()
@@ -32,7 +32,7 @@ class DANet(nn.Module):
         x[1] = F.upsample(x[1], (h, w), mode="bilinear", align_corners=True)
         x[2] = F.upsample(x[2], (h, w), mode="bilinear", align_corners=True)
 
-        return (x[0], x[1], x[2])
+        return x[0]
         
 class DANetHead(nn.Module):
     def __init__(self, in_channels, out_channels):

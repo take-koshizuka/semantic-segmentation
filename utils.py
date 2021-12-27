@@ -52,7 +52,7 @@ class AuxSeLoss(nn.Module):
         batch = target.size(0)
         tvect = torch.zeros(batch, n_classes)
         for i in range(batch):
-            hist = torch.histc(target[i].cpu().data.float(), 
+            hist = torch.histc(target[i].cpu().data.float(),
                                bins=n_classes, min=0,
                                max=n_classes-1)
             vect = hist>0

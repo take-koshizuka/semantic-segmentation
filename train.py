@@ -19,7 +19,6 @@ try:
 except ImportError:
     AMP = False
 
-
 def fix_seed(seed):
     # random
     random.seed(seed)

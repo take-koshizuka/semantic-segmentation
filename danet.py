@@ -80,7 +80,7 @@ class DANetHead(nn.Module):
         output.append(sc_output)
         return tuple(output)
 
-class PAM_Module(Module):
+class PAM_Module(nn.Module):
     """ Position attention module"""
     #Ref from SAGAN
     def __init__(self, in_dim):
@@ -114,7 +114,7 @@ class PAM_Module(Module):
         out = self.gamma*out + x
         return out
 
-class CAM_Module(Module):
+class CAM_Module(nn.Module):
     """ Channel attention module"""
     def __init__(self, in_dim):
         super(CAM_Module, self).__init__()

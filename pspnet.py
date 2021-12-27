@@ -38,8 +38,6 @@ class PyramidPooling(nn.Module):
     def __init__(self, in_channels, pool_sizes):
         super(PyramidPooling, self).__init__()
 
-        # forwardで使用する画像サイズ
-        # 各畳み込み層の出力チャネル数
         out_channels = int(in_channels / len(pool_sizes))
         self.avpool_1 = nn.AdaptiveAvgPool2d(output_size=pool_sizes[0])
         self.cbr_1 = conv2DBatchNormRelu(
@@ -71,7 +69,6 @@ class PyramidPooling(nn.Module):
         out4 = self.cbr_4(self.avpool_4(x))
         out4 = F.interpolate(out4, size=(h, w), mode="bilinear", align_corners=True)
 
-        # 最終的に結合させる、dim=1でチャネル数の次元で結合
         output = torch.cat([x, out1, out2, out3, out4], dim=1)
 
         return output

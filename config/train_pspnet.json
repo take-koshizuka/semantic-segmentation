@@ -16,7 +16,7 @@
     "model_name": "pspnet_resnet50",
     "model" : {
         "n_classes": 1,
-        "aux_weight": 0.4,
+        "aux_weight": 0.4
     },
     "optim" : {
         "lr" : 1e-4

@@ -175,12 +175,10 @@ class bottleNeckIdentifyPSP(nn.Module):
 
 
 class PyramidPooling(nn.Module):
-    def __init__(self, in_channels, pool_sizes, height, width):
+    def __init__(self, in_channels, pool_sizes):
         super(PyramidPooling, self).__init__()
 
         # forwardで使用する画像サイズ
-        self.height = height
-        self.width = width
 
         # 各畳み込み層の出力チャネル数
         out_channels = int(in_channels / len(pool_sizes))
@@ -205,22 +203,18 @@ class PyramidPooling(nn.Module):
             in_channels, out_channels, kernel_size=1, stride=1, padding=0, dilation=1, bias=False)
 
     def forward(self, x):
-
+        _, _, h, w = x.size()
         out1 = self.cbr_1(self.avpool_1(x))
-        out1 = F.interpolate(out1, size=(
-            self.height, self.width), mode="bilinear", align_corners=True)
+        out1 = F.interpolate(out1, size=(h, w), mode="bilinear", align_corners=True)
 
         out2 = self.cbr_2(self.avpool_2(x))
-        out2 = F.interpolate(out2, size=(
-            self.height, self.width), mode="bilinear", align_corners=True)
+        out2 = F.interpolate(out2, size=(h, w), mode="bilinear", align_corners=True)
 
         out3 = self.cbr_3(self.avpool_3(x))
-        out3 = F.interpolate(out3, size=(
-            self.height, self.width), mode="bilinear", align_corners=True)
+        out3 = F.interpolate(out3, size=(h, w), mode="bilinear", align_corners=True)
 
         out4 = self.cbr_4(self.avpool_4(x))
-        out4 = F.interpolate(out4, size=(
-            self.height, self.width), mode="bilinear", align_corners=True)
+        out4 = F.interpolate(out4, size=(h, w), mode="bilinear", align_corners=True)
 
         # 最終的に結合させる、dim=1でチャネル数の次元で結合
         output = torch.cat([x, out1, out2, out3, out4], dim=1)
@@ -312,12 +306,11 @@ class PSPNet_resnet101(nn.Module):
 
         # パラメータ設定
         img_size = 475
-        img_size_8 = 60  # img_sizeの1/8に
         resnet = get_resnet101(pretrained=pretrained)
         self.backbone = Backbone(resnet)
 
         self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[
-            6, 3, 2, 1], height=img_size_8, width=img_size_8)
+            6, 3, 2, 1])
         
         self.decode_feature = DecodePSPFeature(
             height=img_size, width=img_size, n_classes=n_classes)

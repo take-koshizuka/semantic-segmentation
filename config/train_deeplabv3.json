@@ -13,7 +13,7 @@
         "train_masks_dir": "train_label",
         "val_masks_dir": "val_label"
     },
-    "model_name": "pspnet",
+    "model_name": "deeplabv3_resnet50",
     "model" : {
         "n_classes": 1,
         "aux_weight": 0.4

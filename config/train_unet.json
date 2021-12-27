@@ -15,7 +15,6 @@
     },
     "model_name": "unet",
     "model" : {
-        "in_channels": 3, 
         "n_classes": 1, 
         "n_downsample": 4
     },

@@ -5,8 +5,9 @@ import torch.nn.functional as F
 
 
 class PSPNet(nn.Module):
-    def __init__(self, in_channels, n_classes, aux_weight):
+    def __init__(self, n_classes, aux_weight):
         super(PSPNet, self).__init__()
+        self.n_classes = n_classes
 
         # パラメータ設定
         block_config = [3, 4, 6, 3]  # resnet50
@@ -14,7 +15,7 @@ class PSPNet(nn.Module):
         img_size_8 = 60  # img_sizeの1/8に
 
         # 4つのモジュールを構成するサブネットワークの用意
-        self.feature_conv = FeatureMap_convolution(in_channels)
+        self.feature_conv = FeatureMap_convolution()
         self.feature_res_1 = ResidualBlockPSP(
             n_blocks=block_config[0], in_channels=128, mid_channels=64, out_channels=256, stride=1, dilation=1)
         self.feature_res_2 = ResidualBlockPSP(
@@ -69,12 +70,12 @@ class conv2DBatchNormRelu(nn.Module):
 
 
 class FeatureMap_convolution(nn.Module):
-    def __init__(self, in_channels):
+    def __init__(self):
         '''構成するネットワークを用意'''
         super(FeatureMap_convolution, self).__init__()
 
         # 畳み込み層1
-        out_channels, kernel_size, stride, padding, dilation, bias = 64, 3, 2, 1, 1, False
+        in_channels, out_channels, kernel_size, stride, padding, dilation, bias = 3, 64, 3, 2, 1, 1, False
         self.cbnr_1 = conv2DBatchNormRelu(
             in_channels, out_channels, kernel_size, stride, padding, dilation, bias)
 

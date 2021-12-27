@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class UNet(nn.Module):
-    def __init__(self, in_channels, n_classes, n_downsample=4):
+    def __init__(self, n_classes, n_downsample=4):
         """
         Implementation of
         U-Net: Convolutional Networks for Biomedical Image Segmentation
@@ -19,10 +19,11 @@ class UNet(nn.Module):
             n_downsample (int): depth of the network
         """
         super(UNet, self).__init__()
+        self.n_classes = n_classes
 
         # input and output channels for the downsampling path
         out_channels = [64 * (2 ** i) for i in range(n_downsample)]
-        in_channels = [in_channels] + out_channels[:-1]
+        in_channels = [3] + out_channels[:-1]
 
         self.down_path = nn.ModuleList(
             [self._make_unet_conv_block(ich, och) for ich, och in zip(in_channels, out_channels)]

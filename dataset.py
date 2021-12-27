@@ -82,23 +82,23 @@ def get_train_augmentation(img_size):
         albu.RandomRotate90(p=0.5),
         albu.Transpose(p=0.5),
         albu.Resize(img_size,img_size),
-        albu.Lambda(image=to_tensor,mask=to_tensor),
-        albu.Normalize()
+        albu.Normalize(),
+        albu.ToTensorV2()
     ]
     return albu.Compose(train_transform)
 
 def get_val_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
-        albu.Lambda(image=to_tensor,mask=to_tensor),
-        albu.Normalize()
+        albu.Normalize(),
+        albu.ToTensorV2()
     ]
     return albu.Compose(test_transform)
 
 def get_test_augmentation(img_size):
     test_transform = [
         albu.Resize(img_size,img_size),
-        albu.Lambda(image=to_tensor),
-        albu.Normalize()
+        albu.Normalize(),
+        albu.ToTensorV2()
     ]
     return albu.Compose(test_transform)

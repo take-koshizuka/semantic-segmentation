@@ -1,3 +1,6 @@
+import torch.nn as nn
+import torch.nn.functional as F
+
 class EarlyStopping(object):
     def __init__(self, monitor='loss', direction='min'):
         self.monitor = monitor
@@ -16,3 +19,14 @@ class EarlyStopping(object):
 
     def update(self, values):
         self.monitor_values[self.monitor] = values[self.monitor]
+
+
+class AuxLoss(nn.Module):
+    def __init__(self, aux_weight=0.4):
+        super(AuxLoss, self).__init__()
+        self.aux_weight = aux_weight
+    
+    def forward(self, outputs, targets):
+        loss = F.binary_cross_entropy_with_logits(outputs[0], targets, reduction='mean')
+        loss_aux = F.binary_cross_entropy_with_logits(outputs[1], targets, reduction='mean')
+        return loss + self.aux_weight * loss_aux

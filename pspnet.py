@@ -2,7 +2,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from utils import AuxLoss
+from resnet import get_resnet50, get_resnet101, Backbone
 
 class PSPNet(nn.Module):
     def __init__(self, n_classes, aux_weight):
@@ -34,7 +35,7 @@ class PSPNet(nn.Module):
         self.aux = AuxiliaryPSPlayers(
             in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
 
-        self.criterion = PSPLoss(aux_weight)
+        self.criterion = AuxLoss(aux_weight)
 
     def forward(self, x):
         x = self.feature_conv(x)
@@ -65,9 +66,7 @@ class conv2DBatchNormRelu(nn.Module):
         x = self.conv(x)
         x = self.batchnorm(x)
         outputs = self.relu(x)
-
         return outputs
-
 
 class FeatureMap_convolution(nn.Module):
     def __init__(self):
@@ -249,7 +248,6 @@ class DecodePSPFeature(nn.Module):
         x = self.classification(x)
         output = F.interpolate(
             x, size=(self.height, self.width), mode="bilinear", align_corners=True)
-
         return output
 
 
@@ -276,12 +274,62 @@ class AuxiliaryPSPlayers(nn.Module):
 
         return output
 
-class PSPLoss(nn.Module):
-    def __init__(self, aux_weight=0.4):
-        super(PSPLoss, self).__init__()
+class PSPNet_resnet50(nn.Module):
+    def __init__(self, n_classes, aux_weight, pretrained=True):
+        super(PSPNet_resnet50, self).__init__()
+        self.n_classes = n_classes
         self.aux_weight = aux_weight
+
+        # パラメータ設定
+        img_size = 475
+        img_size_8 = 60  # img_sizeの1/8に
+        resnet = get_resnet50(pretrained=pretrained)
+        self.backbone = Backbone(resnet)
+
+        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[
+            6, 3, 2, 1], height=img_size_8, width=img_size_8)
+        
+        self.decode_feature = DecodePSPFeature(
+            height=img_size, width=img_size, n_classes=n_classes)
+
+        self.aux = AuxiliaryPSPlayers(
+            in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
+
+        self.criterion = AuxLoss(aux_weight)
     
-    def forward(self, outputs, targets):
-        loss = F.binary_cross_entropy_with_logits(outputs[0], targets, reduction='mean')
-        loss_aux = F.binary_cross_entropy_with_logits(outputs[1], targets, reduction='mean')
-        return loss + self.aux_weight * loss_aux
+    def forward(self, x):
+        _, _, c3, c4 = self.backbone(x)
+        x = self.pyramid_pooling(c4)
+        output = self.decode_feature(x)
+        auxout = self.aux(c3)
+        return (output, auxout)
+
+class PSPNet_resnet101(nn.Module):
+    def __init__(self, n_classes, aux_weight, pretrained=True):
+        super(PSPNet_resnet101, self).__init__()
+        self.n_classes = n_classes
+        self.aux_weight = aux_weight
+
+        # パラメータ設定
+        img_size = 475
+        img_size_8 = 60  # img_sizeの1/8に
+        resnet = get_resnet101(pretrained=pretrained)
+        self.backbone = Backbone(resnet)
+
+        self.pyramid_pooling = PyramidPooling(in_channels=2048, pool_sizes=[
+            6, 3, 2, 1], height=img_size_8, width=img_size_8)
+        
+        self.decode_feature = DecodePSPFeature(
+            height=img_size, width=img_size, n_classes=n_classes)
+
+        self.aux = AuxiliaryPSPlayers(
+            in_channels=1024, height=img_size, width=img_size, n_classes=n_classes)
+
+        self.criterion = AuxLoss(aux_weight)
+    
+    def forward(self, x):
+        _, _, c3, c4 = self.backbone(x)
+        x = self.pyramid_pooling(c4)
+        output = self.decode_feature(x)
+        auxout = self.aux(c3)
+        return (output, auxout)

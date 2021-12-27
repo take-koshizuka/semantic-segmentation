@@ -1,7 +1,7 @@
 {
     "seed" : 57,
-    "epochs": 150,
-    "checkpoint_period": 20,
+    "epochs": 100,
+    "checkpoint_period": 10,
     "classes": ["building"],
     "dataset" : {
         "root": "data",
@@ -12,7 +12,7 @@
         "train_masks_dir": "train_label",
         "val_masks_dir": "val_label"
     },
-    "model_name": "deeplabv3",
+    "model_name": "fcn",
     "model" : {
         "n_classes": 1,
         "aux_weight": 0.4,

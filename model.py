@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import pathlib
 from copy import deepcopy
 
-from torchmetrics import MetricCollection, Accuracy, JaccardIndex
+from torchmetrics import MetricCollection, Accuracy, IoU
 
 try:
     import apex.amp as amp
@@ -34,7 +34,7 @@ class Net(nn.Module):
         self.net = net
         self.device = device
         self.criterion = self.net.criterion
-        metrics = MetricCollection([Accuracy(), JaccardIndex(num_classes=self.net.n_classes)])
+        metrics = MetricCollection([Accuracy(), IoU(num_classes=self.net.n_classes)])
         self.train_metrics = metrics.clone(prefix='train_')
         self.valid_metrics = metrics.clone(prefix='val_')
 

@@ -20,7 +20,7 @@ class DANet(nn.Module):
         
         self.backbone = Backbone(resnet)
         self.head = DANetHead(2048, n_classes)
-        self.criterion = AuxSeLoss(aux_weight, se_weight)
+        self.criterion = AuxSeLoss(n_classes, aux_weight, se_weight)
 
     def forward(self, x):
         _, _, h, w = x.size()

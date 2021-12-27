@@ -34,7 +34,7 @@ class AuxLoss(nn.Module):
 
 class AuxSeLoss(nn.Module):
     def __init__(self, n_classes, aux_weight=0.4, se_weight=0.2):
-        super(AuxLoss, self).__init__()
+        super(AuxSeLoss, self).__init__()
         self.n_classes = n_classes
         self.aux_weight = aux_weight
         self.se_weight = se_weight
@@ -50,7 +50,7 @@ class AuxSeLoss(nn.Module):
     def _get_batch_label_vector(target, n_classes):
         # target is a 3D Variable BxHxW, output is 2D BxnClass
         batch = target.size(0)
-        tvect = nn.Variable(torch.zeros(batch, n_classes))
+        tvect = torch.zeros(batch, n_classes)
         for i in range(batch):
             hist = torch.histc(target[i].cpu().data.float(), 
                                bins=n_classes, min=0,

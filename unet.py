@@ -91,3 +91,9 @@ class UNet(nn.Module):
             return x, blocks
 
         return x
+
+    def parameters(self):
+        params = [ 
+            { 'params' : self.parameters(), 'lr': 1e-4 },
+        ]
+        return params

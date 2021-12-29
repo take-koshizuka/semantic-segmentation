@@ -34,6 +34,15 @@ class PSPNet(nn.Module):
         auxout = F.interpolate(auxout, size=(h, w), mode="bilinear", align_corners=True) 
         return (output, auxout)
 
+    def parameters(self):
+        params = [ 
+            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.pyramid_pooling.parameters(), 'lr' : 1e-3 },
+            { 'params' : self.decode_feature.parameters(), 'lr' : 1e-3 },
+            { 'params' : self.aux.parameters(), 'lr' : 1e-3 },
+        ]
+        return params
+
 class PyramidPooling(nn.Module):
     def __init__(self, in_channels, pool_sizes):
         super(PyramidPooling, self).__init__()

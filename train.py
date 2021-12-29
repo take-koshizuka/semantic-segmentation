@@ -10,7 +10,7 @@ from tqdm import tqdm
 from pathlib import Path
 import argparse
 
-from dataset import RS21BD, get_train_augmentation, get_val_augmentation
+from dataset import RS21BD, get_augmentation
 from model import Net, MODEL_NAME
 
 try:
@@ -40,12 +40,12 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
     train_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['train_images_dir']
     train_masks_dir = Path(cfg['dataset']['root']) / cfg['dataset']['train_masks_dir']
     tr_ds = RS21BD(train_images_dir, train_masks_dir, 
-                augmentation=get_train_augmentation(), classes=cfg['classes'])
+                augmentation=get_augmentation(cfg['train_aug']), classes=cfg['classes'])
 
     val_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['val_images_dir']
     val_masks_dir = Path(cfg['dataset']['root']) / cfg['dataset']['val_masks_dir']
     va_ds = RS21BD(val_images_dir, val_masks_dir, 
-                augmentation=get_val_augmentation(), classes=cfg['classes'])
+                augmentation=get_augmentation(cfg['val_aug']), classes=cfg['classes'])
         
     # Define dataloader
     tr_dl = DataLoader(tr_ds, batch_size=cfg['dataset']['batch_size'], shuffle=True, drop_last=True)
@@ -57,7 +57,7 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
     model.to(device)
 
     # Define optimizer and scheduler (optional)
-    optimizer = optim.Adam( model.parameters(), lr=cfg['optim']['lr'])
+    optimizer = optim.Adam(model.parameters())
     # scheduler = 
 
     early_stopping = EarlyStopping('avg_loss', 'min') 

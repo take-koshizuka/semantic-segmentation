@@ -33,6 +33,13 @@ class DANet(nn.Module):
         x[2] = F.upsample(x[2], (h, w), mode="bilinear", align_corners=True)
 
         return x[0]
+
+    def parameters(self):
+        params = [ 
+            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.head.parameters(), 'lr' : 1e-3 }
+        ]
+        return params
         
 class DANetHead(nn.Module):
     def __init__(self, in_channels, out_channels):

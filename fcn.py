@@ -35,6 +35,14 @@ class FCN(nn.Module):
     
         return (out, auxout)
 
+    def parameters(self):
+        params = [ 
+            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.head.parameters(), 'lr' : 1e-3 },
+            { 'params' : self.aux.parameters(), 'lr' : 1e-3 }
+        ]
+        return params
+
 class FCNHead(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(FCNHead, self).__init__()

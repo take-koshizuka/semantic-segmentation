@@ -22,3 +22,11 @@ class Deeplabv3(nn.Module):
     def forward(self, x):
         out = self.model(x)
         return (out["out"], out["aux"])
+
+    def parameters(self):
+        params = [ 
+            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.classifier.parameters(), 'lr' : 1e-3 },
+            { 'params' : self.aux_classifier.parameters(), 'lr' : 1e-3 }
+        ]
+        return params

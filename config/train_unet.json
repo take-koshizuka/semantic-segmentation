@@ -3,6 +3,8 @@
     "epochs": 50,
     "checkpoint_period": 10,
     "classes": ["building"],
+    "train_aug": ["flip", "rotate", "transpose"],
+    "val_aug": [],
     "dataset" : {
         "root": "data",
         "batch_size" : 8,
@@ -16,8 +18,5 @@
     "model" : {
         "n_classes": 1, 
         "n_downsample": 4
-    },
-    "optim" : {
-        "lr" : 1e-4
     }
 }

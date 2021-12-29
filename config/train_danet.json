@@ -3,6 +3,8 @@
     "epochs": 100,
     "checkpoint_period": 10,
     "classes": ["building"],
+    "train_aug": ["norm"],
+    "val_aug": ["norm"],
     "dataset" : {
         "root": "data",
         "batch_size" : 8,
@@ -16,8 +18,5 @@
     "model" : {
         "n_classes": 1,
         "backbone": "resnet50"
-    },
-    "optim" : {
-        "lr" : 1e-4
     }
 }

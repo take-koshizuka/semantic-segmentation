@@ -57,7 +57,7 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
     model.to(device)
 
     # Define optimizer and scheduler (optional)
-    optimizer = optim.Adam(model.parameters())
+    optimizer = optim.Adam(model.parameters_lr())
     # scheduler = 
 
     early_stopping = EarlyStopping('avg_loss', 'min') 

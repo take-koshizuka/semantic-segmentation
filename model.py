@@ -116,5 +116,5 @@ class Net(nn.Module):
         if amp:
             amp.load_state_dict(checkpoint["amp"])
 
-    def parameters(self):
-        return self.net.parameters()
+    def parameters_lr(self):
+        return self.net.parameters_lr()

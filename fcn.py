@@ -35,7 +35,7 @@ class FCN(nn.Module):
     
         return (out, auxout)
 
-    def parameters(self):
+    def parameters_lr(self):
         params = [ 
             { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
             { 'params' : self.head.parameters(), 'lr' : 1e-3 },

@@ -34,7 +34,7 @@ class PSPNet(nn.Module):
         auxout = F.interpolate(auxout, size=(h, w), mode="bilinear", align_corners=True) 
         return (output, auxout)
 
-    def parameters(self):
+    def parameters_lr(self):
         params = [ 
             { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
             { 'params' : self.pyramid_pooling.parameters(), 'lr' : 1e-3 },

@@ -23,7 +23,7 @@ class Deeplabv3(nn.Module):
         out = self.model(x)
         return (out["out"], out["aux"])
 
-    def parameters(self):
+    def parameters_lr(self):
         params = [ 
             { 'params' : self.model.backbone.parameters(), 'lr': 1e-4 },
             { 'params' : self.model.classifier.parameters(), 'lr' : 1e-3 },

@@ -30,9 +30,6 @@ MODEL_NAME = {
     "deeplabv3": Deeplabv3,
     "danet": DANet
 }
-    #"dan_resnet50" : Dan_resnet50,
-    #"dan_resnet101" : Dan_resnet101
-#}
 
 class Net(nn.Module):
     def __init__(self, net, device):
@@ -118,3 +115,6 @@ class Net(nn.Module):
         self.net.load_state_dict(checkpoint["net"])
         if amp:
             amp.load_state_dict(checkpoint["amp"])
+
+    def parameters(self):
+        return self.net.parameters()

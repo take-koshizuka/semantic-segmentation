@@ -3,7 +3,7 @@
     "epochs": 100,
     "checkpoint_period": 10,
     "classes": ["building"],
-    "train_aug": ["norm"],
+    "train_aug": ["flip", "rotate", "transpose", "norm"],
     "val_aug": ["norm"],
     "dataset" : {
         "root": "data",

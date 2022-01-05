@@ -25,8 +25,8 @@ class Deeplabv3(nn.Module):
 
     def parameters(self):
         params = [ 
-            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
-            { 'params' : self.classifier.parameters(), 'lr' : 1e-3 },
-            { 'params' : self.aux_classifier.parameters(), 'lr' : 1e-3 }
+            { 'params' : self.model.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.model.classifier.parameters(), 'lr' : 1e-3 },
+            { 'params' : self.model.aux_classifier.parameters(), 'lr' : 1e-3 }
         ]
         return params

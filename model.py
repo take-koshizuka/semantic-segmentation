@@ -38,7 +38,7 @@ class Net(nn.Module):
         self.net = net
         self.device = device
         self.criterion = self.net.criterion
-        metrics = MetricCollection([Accuracy(), Precision(num_classes=2), Recall(num_classes=2), pIoU(num_classes=2)])
+        metrics = MetricCollection([Accuracy(), Precision(), Recall(), pIoU(num_classes=2)])
         self.train_metrics = metrics.clone(prefix='train_')
         self.valid_metrics = metrics.clone(prefix='val_')
 

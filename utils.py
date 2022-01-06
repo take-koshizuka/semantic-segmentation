@@ -87,4 +87,4 @@ class pIoU(IoU):
     def compute(self) -> torch.Tensor:
         """Computes intersection over union (IoU)"""
         v = super().compute()
-        return v[0]
+        return v[1]

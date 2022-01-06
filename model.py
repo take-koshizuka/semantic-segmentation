@@ -55,6 +55,7 @@ class Net(nn.Module):
             out = out[0]
         pred = (out > 0.0).long()
         score = self.train_metrics(pred.float().flatten(), y.long().flatten())
+        score['train_IoU'] = score['train_IoU'][0]
         score = { k: v.item() for k, v in score.items() }
         score['loss'] = loss
         return score
@@ -72,6 +73,7 @@ class Net(nn.Module):
                 out = out[0]
             pred = (out > 0.0).long()
             score = self.valid_metrics(pred.float().flatten(), y.long().flatten())
+            score['val_IoU'] = score['val_IoU'][0]
             score = { k: v.item() for k, v in score.items() }
             score['val_loss'] = loss
         return score

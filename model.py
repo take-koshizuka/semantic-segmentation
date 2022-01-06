@@ -54,8 +54,8 @@ class Net(nn.Module):
         loss = self.criterion(out, y)
         if isinstance(out, tuple):
             out = out[0]
-        pred = (out > 0.0).long()
-        score = self.train_metrics(pred.long().flatten(), y.long().flatten())
+        pred = torch.sigmoid(out)
+        score = self.train_metrics(pred.float().flatten(), y.long().flatten())
         score = { k: v.item() for k, v in score.items() }
         score['loss'] = loss
         return score
@@ -71,8 +71,8 @@ class Net(nn.Module):
 
             if isinstance(out, tuple):
                 out = out[0]
-            pred = (out > 0.0).long()
-            score = self.valid_metrics(pred.long().flatten(), y.long().flatten())
+            pred = torch.sigmoid(out)
+            score = self.valid_metrics(pred.float().flatten(), y.long().flatten())
             score = { k: v.item() for k, v in score.items() }
             score['val_loss'] = loss
         return score

@@ -1,4 +1,4 @@
-# semantic-segmentation
+# UTokyo RS21 Building Detection (Semantic segmentation)
 ## setup
 Prepare the data, and rewrite the config file to specify the path to the data. (default: semantic-segmentation/data)
 

@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import pathlib
 from copy import deepcopy
 
-from torchmetrics import MetricCollection, Accuracy, AveragePrecision, Recall
+from torchmetrics import MetricCollection, Accuracy, Precision, Recall
 from utils import pIoU
 
 try:
@@ -38,7 +38,7 @@ class Net(nn.Module):
         self.net = net
         self.device = device
         self.criterion = self.net.criterion
-        metrics = MetricCollection([Accuracy(), AveragePrecision(pos_label=1), Recall(), pIoU(num_classes=2)])
+        metrics = MetricCollection([Accuracy(), Precision(num_classes=2), Recall(num_classes=2), pIoU(num_classes=2)])
         self.train_metrics = metrics.clone(prefix='train_')
         self.valid_metrics = metrics.clone(prefix='val_')
 
@@ -55,7 +55,7 @@ class Net(nn.Module):
         if isinstance(out, tuple):
             out = out[0]
         pred = (out > 0.0).long()
-        score = self.train_metrics(pred.float().flatten(), y.long().flatten())
+        score = self.train_metrics(pred.long().flatten(), y.long().flatten())
         score = { k: v.item() for k, v in score.items() }
         score['loss'] = loss
         return score
@@ -72,7 +72,7 @@ class Net(nn.Module):
             if isinstance(out, tuple):
                 out = out[0]
             pred = (out > 0.0).long()
-            score = self.valid_metrics(pred.float().flatten(), y.long().flatten())
+            score = self.valid_metrics(pred.long().flatten(), y.long().flatten())
             score = { k: v.item() for k, v in score.items() }
             score['val_loss'] = loss
         return score

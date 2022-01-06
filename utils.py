@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchmetrics import IoU
+from typing import Any, Optional
 
 class EarlyStopping(object):
     def __init__(self, monitor='loss', direction='min'):
@@ -58,3 +60,31 @@ class AuxSeLoss(nn.Module):
             vect = hist>0
             tvect[i] = vect
         return tvect
+
+
+class pIoU(IoU):
+    def __init__(
+        self,
+        num_classes: int,
+        ignore_index: Optional[int] = None,
+        absent_score: float = 0.0,
+        threshold: float = 0.5,
+        compute_on_step: bool = True,
+        dist_sync_on_step: bool = False,
+        process_group: Optional[Any] = None,
+    ) -> None:
+        super().__init__(
+            num_classes=num_classes,
+            ignore_index=ignore_index,
+            absent_score=absent_score,
+            threshold=threshold,
+            reduction='none',
+            compute_on_step=compute_on_step,
+            dist_sync_on_step=dist_sync_on_step,
+            process_group=process_group
+        )
+
+    def compute(self) -> torch.Tensor:
+        """Computes intersection over union (IoU)"""
+        v = super().compute()
+        return v[0]

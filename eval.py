@@ -58,7 +58,6 @@ def main(checkpoint_dir, out_dir):
 
     model.eval()
 
-    
     outputs = []
     for batch_idx, eval_batch in enumerate(tqdm(va_dl)):
         out = model.validation_step(eval_batch, batch_idx)
@@ -66,8 +65,8 @@ def main(checkpoint_dir, out_dir):
         del eval_batch
 
     val_result = model.validation_epoch_end(outputs)
-
-    print(val_result)
+    with open(str(checkpoint_dir / "best_val_results.json"), "w") as f:
+        json.dump(val_result['log'], f, indent=4)
     
     for batch_idx, batch in enumerate(tqdm(te_dl)):
         pred, rgb_fname = model.generating_step(batch, batch_idx)

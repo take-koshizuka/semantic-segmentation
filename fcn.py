@@ -37,7 +37,7 @@ class FCN(nn.Module):
 
     def parameters_lr(self):
         params = [ 
-            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.backbone.parameters(), 'lr': 1e-3 },
             { 'params' : self.head.parameters(), 'lr' : 1e-3 },
             { 'params' : self.aux.parameters(), 'lr' : 1e-3 }
         ]

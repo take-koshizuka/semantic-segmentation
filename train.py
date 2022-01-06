@@ -100,7 +100,10 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
         training_result = model.training_epoch_end(outputs)
         writer.add_scalar('data/training_loss', training_result['log']['avg_loss'])
         writer.add_scalar('data/training_acc', training_result['log']['train_Accuracy'])
-
+        writer.add_scalar('data/training_precision', val_result['log']['train_AveragePrecision'])
+        writer.add_scalar('data/training_recall', val_result['log']['train_Recall'])
+        writer.add_scalar('data/training_iou', val_result['log']['train_IoU'])
+        
         # validation phase
         outputs = []
         for batch_idx, eval_batch in enumerate(tqdm(va_dl, leave=False)):
@@ -111,7 +114,10 @@ def main(train_config_path, checkpoint_dir, resume_path=""):
         val_result = model.validation_epoch_end(outputs)
         writer.add_scalar('data/val_loss', val_result['log']['avg_loss'])
         writer.add_scalar('data/val_acc', val_result['log']['val_Accuracy'])
-        
+        writer.add_scalar('data/val_precision', val_result['log']['val_AveragePrecision'])
+        writer.add_scalar('data/val_recall', val_result['log']['val_Recall'])
+        writer.add_scalar('data/val_iou', val_result['log']['val_IoU'])
+
         records[f'epoch {i}'] = val_result['log']
 
         with open(str(checkpoint_dir / f"records_elapse.json"), "w") as f:

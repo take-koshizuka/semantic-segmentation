@@ -36,7 +36,7 @@ class PSPNet(nn.Module):
 
     def parameters_lr(self):
         params = [ 
-            { 'params' : self.backbone.parameters(), 'lr': 1e-4 },
+            { 'params' : self.backbone.parameters(), 'lr': 1e-3 },
             { 'params' : self.pyramid_pooling.parameters(), 'lr' : 1e-3 },
             { 'params' : self.decode_feature.parameters(), 'lr' : 1e-3 },
             { 'params' : self.aux.parameters(), 'lr' : 1e-3 },

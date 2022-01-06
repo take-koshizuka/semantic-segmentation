@@ -35,10 +35,16 @@ def main(checkpoint_dir, out_dir):
     fix_seed(cfg['seed'])
     out_dir.mkdir(exist_ok=True, parents=True)
     # Define dataset
+
+    val_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['val_images_dir']
+    val_masks_dir = Path(cfg['dataset']['root']) / cfg['dataset']['val_masks_dir']
+    va_ds = RS21BD(val_images_dir, val_masks_dir, augmentation=get_augmentation(cfg['val_aug']), classes=cfg['classes'])
+
     test_images_dir = Path(cfg['dataset']['root']) / cfg['dataset']['test_images_dir']
     te_ds = RS21BD(test_images_dir, augmentation=get_augmentation(cfg["val_aug"]), classes=cfg['classes'])
 
     # Define dataloader
+    va_dl = DataLoader(va_ds, batch_size=cfg['dataset']['batch_size'], drop_last=False)
     te_dl = DataLoader(te_ds, batch_size=1, shuffle=False)
 
     # Define model
@@ -51,6 +57,17 @@ def main(checkpoint_dir, out_dir):
     model.to(device)
 
     model.eval()
+
+    
+    outputs = []
+    for batch_idx, eval_batch in enumerate(tqdm(va_dl)):
+        out = model.validation_step(eval_batch, batch_idx)
+        outputs.append(out)
+        del eval_batch
+
+    val_result = model.validation_epoch_end(outputs)
+
+    print(val_result)
     
     for batch_idx, batch in enumerate(tqdm(te_dl)):
         pred, rgb_fname = model.generating_step(batch, batch_idx)
